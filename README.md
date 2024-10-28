@@ -1,6 +1,6 @@
 # Fine-tuning BERT for text-classification
 
-Problem statement
+Problem statement \n
 The aim is to develop a machine learning algorithm to predict whether a tweet is about a real disaster or not.
 
 Aproach
