@@ -1,39 +1,34 @@
 # Fine-tuning BERT for text-classification
 
-Problem statement:
-The aim is to develop a machine learning algorithm to predict whether a tweet is about a real disaster or not.
+1. Problem Statement
+The project’s goal is to develop a model that can accurately classify tweets as related to a real disaster or not. This task involves using natural language processing (NLP) to distinguish between genuine disaster-related content and other unrelated tweets, a key task for improving information flow during emergencies.
 
-Approach:
-Transfer learning technique is used to perform the text classification problem. We load pretrained BERT model and finetune the weights.
+2. Approach
+The solution applies transfer learning with a pre-trained BERT model. BERT is widely used in NLP due to its bidirectional transformer architecture, which allows the model to capture the context of words from both directions in a sentence, making it ideal for nuanced language tasks. The benefits of fine-tuning BERT include:
 
-Advantages of fine-tuning:
-Time - Pretrained BERT model weights already encode a lot of information. As a result, it takes much less time to finetune the model
+Reduced Training Time: BERT’s pre-trained weights contain general language knowledge, which helps the model learn from the new data more efficiently.
+Lower Data Requirements: Since the BERT model has been trained on vast corpora, even a limited dataset (like disaster-related tweets) can yield high performance.
+3. Data Preprocessing
+Custom data cleaning steps were applied to ensure quality input for the BERT model. The preprocessing steps include:
 
-Data - As the pretrained model is trained on large text, the model performs well even with small datasets.
+Removing URLs: Hyperlinks in tweets were stripped to focus on the main text.
+Removing HTML Tags: Any embedded HTML tags were removed.
+Removing Punctuation: Special characters were deleted to standardize the text.
+Removing Stopwords: Common words with little semantic value (like “the,” “is”) were filtered out.
+Removing Emojis: Emojis were removed since they are not directly meaningful for this task and could introduce noise.
+These steps aimed to enhance the classifier’s ability to focus on the content relevant to disaster classification.
 
-We don't go into the details of BERT architecture. Here is an overview about how BERT is pretrained, and how it can be used for classification.
+4. Model Setup and Fine-Tuning BERT
+The BERT model architecture consists of multiple transformer layers, and for this task:
 
-BERT (Bidirectional Encoder Representations from Transformers):
-Language modeling is a common method of pretraining on unlabeled text (self supervised learning). Most of the language models learned by iteratively predicting next word in a sequence auto regressively across enormous data sets of text like wikepedia. This can be left to right, right to left or bi-directional.
+Tokenizer Setup: The BERT tokenizer converts each tweet into tokens (numerical representations), crucial for feeding into the BERT model.
+Input Preparation: Each tweet is tokenized, and a special [CLS] token is added to the beginning of each input, as BERT’s architecture uses the embedding from this token for classification tasks.
+Classification Layer: A simple dense (fully connected) layer is added to the [CLS] embedding from the final layer to enable binary classification (real disaster vs. not).
+5. Model Training and Optimization
+The fine-tuning involves adjusting the weights of BERT’s layers to adapt it to the disaster classification task. Key techniques used during training include:
 
-There are two strategies of applying pretrained language representations to downstream tasks:
-
-Feature based approach
-Fine tuning approach
-The feauture based approach, such as ELMo uses task specific architectures that include the pretrained representations as additional features.
-
-The fine tuning approach, such as OpenAI GPT, introduces minimal task specific parameters, and is trained on the downstream task by fine tuning all the pretrained parameters.
-
-BERT model can be used for both the approaches. BERT reformulates the language modeling pretrained task of iteratively predicting the next word in sequence to instead incorporate bidirectional context and predict mask of intermediate tokens of the sequence and predict the mask token. BERT presented a new self supervised learning task for pretaining transformers inorder to fine tune them for different tasks. They major difference between BERT and prior methods of pretraining transformer models is using the bidirectional context of language modeling. Most of the models either move left to right or right to left to predict next word in sequence, where BERT tries to learn intermediate tokens (by MASK), making the name Bidirectional Encoder.
-
-BERT uses Masked language model and also use "Next sentence prediction" task.
-
-BERT uses 3 embeddings to compute the input representations. They are token embeddings, segment embeddings and position embeddings.
-
-BERT Transformer will preserve the length of the (dimention of the) input. The final output will take this vector and pass these to seperate tasks (classification, in this case).
-
-BERT for Classification
-BERT consists of stacked encoder layers. Just like the input of encoder of the transformer model, BERT model takes the sequence of numeric representation of the tokens as input. For classification tasks, we must prepend the special [CLS] token to the beginning of every sentence.
-
-Encoder block of transformer outputs a vector with same length as of input. First position of the vector, corresponding to the [CLS] token, can now be used as the input for a classifier.
-
+Adam Optimizer with Weight Decay: A modified Adam optimizer tailored for BERT’s parameter space.
+Learning Rate Scheduler: A linear decay scheduler is used to adjust the learning rate dynamically, which stabilizes training and improves convergence.
+Early Stopping and Dropout: Regularization techniques to prevent overfitting.
+6. Model Evaluation
+After training, the model is evaluated using metrics such as accuracy, precision, recall, and F1-score to measure its performance in distinguishing real disaster tweets from unrelated content. The evaluation provides insights into model reliability, and these metrics guide any further tuning for optimal results.
